@@ -24,7 +24,7 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-No API key is needed: the default **offline extractor** is rule-based and works on the demo data.
+gemini API key is taken : the default **offline extractor** is rule-based and works on the demo data.
 To use a language model, copy `.env.example` to `.env`, set `LLM_PROVIDER` and the matching key.
 If a key is missing or the AI call fails, the app tells you and falls back to the offline extractor for that source.
 

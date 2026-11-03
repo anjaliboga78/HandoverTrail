@@ -53,13 +53,6 @@ Your browser opens at http://localhost:8501. If it does not, open that address y
 3. Restart the app. On page 2 it now says which model is used. If the key is wrong or the service fails, the app tells you and falls back to the offline extractor for that source.
 This path could not be tested without internet in the build environment, so test it once with your own key and tell us if anything needs fixing.
 
-**Test the connection** (from the project folder, with `.env` filled in):
-```
-python -m core.llm            # sends one tiny request and prints OK or the exact error
-python -m core.llm --models   # Gemini only: lists the model names your key can use (for GEMINI_MODEL)
-```
-Errors show the real HTTP status and the provider's own message, e.g. `404` = wrong `GEMINI_MODEL`, `400/401/403` = key problem, `429` = quota/rate limit, `500/503` = Google is busy (retried automatically). Your key is never printed or logged.
-
 ## 8. Put it on GitHub (the brief requires a repository)
 ```
 git init

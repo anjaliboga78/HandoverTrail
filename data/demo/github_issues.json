@@ -1,0 +1,58 @@
+[
+ {
+  "number": 7,
+  "title": "Server crashes after restart",
+  "state": "open",
+  "user": {
+   "login": "karan"
+  },
+  "created_at": "2026-02-10T09:00:00Z",
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "body": "Every time the college VM restarts the app server does not come back up."
+ },
+ {
+  "number": 9,
+  "title": "Payment webhook fails in sandbox",
+  "state": "open",
+  "user": {
+   "login": "karan"
+  },
+  "created_at": "2026-02-14T18:00:00Z",
+  "labels": [
+   {
+    "name": "bug"
+   }
+  ],
+  "body": "The webhook returns error 400. We are blocked by missing sandbox keys."
+ },
+ {
+  "number": 11,
+  "title": "Deployment script is missing",
+  "state": "open",
+  "user": {
+   "login": "meera"
+  },
+  "created_at": "2026-02-20T11:00:00Z",
+  "labels": [
+   {
+    "name": "ops"
+   }
+  ],
+  "body": "Nobody owns the deployment script yet."
+ },
+ {
+  "number": 12,
+  "title": "Login page bug",
+  "state": "closed",
+  "user": {
+   "login": "karan"
+  },
+  "created_at": "2026-02-18T10:00:00Z",
+  "labels": [],
+  "body": "Fixed in the last release and tested on two phones."
+ }
+]

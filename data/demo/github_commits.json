@@ -1,0 +1,122 @@
+[
+ {
+  "sha": "00004d2",
+  "commit": {
+   "author": {
+    "name": "Karan",
+    "date": "2026-01-14T10:00:00Z"
+   },
+   "message": "backend: set up project skeleton"
+  }
+ },
+ {
+  "sha": "00023c1",
+  "commit": {
+   "author": {
+    "name": "Karan",
+    "date": "2026-01-20T10:00:00Z"
+   },
+   "message": "backend: add login and signup"
+  }
+ },
+ {
+  "sha": "00042b0",
+  "commit": {
+   "author": {
+    "name": "Meera",
+    "date": "2026-01-28T10:00:00Z"
+   },
+   "message": "ui: add home screen"
+  }
+ },
+ {
+  "sha": "000619f",
+  "commit": {
+   "author": {
+    "name": "Karan",
+    "date": "2026-02-03T10:00:00Z"
+   },
+   "message": "payments: create order endpoint"
+  }
+ },
+ {
+  "sha": "000808e",
+  "commit": {
+   "author": {
+    "name": "Karan",
+    "date": "2026-02-07T10:00:00Z"
+   },
+   "message": "payments: add webhook handler"
+  }
+ },
+ {
+  "sha": "0009f7d",
+  "commit": {
+   "author": {
+    "name": "Karan",
+    "date": "2026-02-12T10:00:00Z"
+   },
+   "message": "payments: store payment status"
+  }
+ },
+ {
+  "sha": "000be6c",
+  "commit": {
+   "author": {
+    "name": "Karan",
+    "date": "2026-02-16T10:00:00Z"
+   },
+   "message": "payments: add refund endpoint"
+  }
+ },
+ {
+  "sha": "000dd5b",
+  "commit": {
+   "author": {
+    "name": "Karan",
+    "date": "2026-02-25T10:00:00Z"
+   },
+   "message": "db: add event tables"
+  }
+ },
+ {
+  "sha": "000fc4a",
+  "commit": {
+   "author": {
+    "name": "Meera",
+    "date": "2026-02-26T10:00:00Z"
+   },
+   "message": "ui: add booking screen"
+  }
+ },
+ {
+  "sha": "0011b39",
+  "commit": {
+   "author": {
+    "name": "Riya",
+    "date": "2026-03-01T10:00:00Z"
+   },
+   "message": "docs: update readme"
+  }
+ },
+ {
+  "sha": "0013a28",
+  "commit": {
+   "author": {
+    "name": "Karan",
+    "date": "2026-03-03T10:00:00Z"
+   },
+   "message": "payments: handle webhook retries"
+  }
+ },
+ {
+  "sha": "0015917",
+  "commit": {
+   "author": {
+    "name": "Karan",
+    "date": "2026-03-05T10:00:00Z"
+   },
+   "message": "deploy: add start script"
+  }
+ }
+]

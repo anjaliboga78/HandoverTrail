@@ -1,0 +1,6 @@
+[2026-02-11 21:04] Karan: the payment sandbox key is sk_test_FAKE12345678 for now
+[2026-02-11 21:06] Karan: admin password is orbit@admin123 please do not share it
+[2026-02-11 21:10] Meera: let's go with the blue theme for the app
+[2026-02-12 09:15] Riya: please email the sponsor at sharma@sponsor.example if anything changes
+[2026-02-12 09:20] Karan: call me on 9876543210 if the server goes down again
+[2026-02-14 18:30] Karan: the webhook keeps failing in the sandbox, I think the keys are wrong

@@ -1,24 +1,6 @@
-# Environment variables and secrets
 .env
-.streamlit/secrets.toml
-
-# Python environments
-venv/
-.venv/
-
-# Python temporary files
-__pycache__/
-*.py[cod]
-.pytest_cache/
-
-# Databases and local workspace data
 *.db
-*.sqlite
-*.sqlite3
-/data/workspaces/
-/data/handovertrail
-
-# Logs
-*.log
-
-test_ai.py
+__pycache__/
+.venv/
+venv/
+.pytest_cache/

@@ -9,15 +9,17 @@ from collections import Counter
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
+from types import SimpleNamespace
 
 import splash
 import mobile
+import phone
 import ui
 from core import checklist, config, db, extract, flags, handover, ingest, llm, notes, paste, plan, readiness, report, roles, safety, themes, transfer
 from ui import STATUS_TEXT, type_label
 
 st.set_page_config(page_title="HandoverTrail", page_icon=str(config.BASE / "assets" / "icon.png"), layout="wide")
-mobile.apply()
 
 BADGE = {"verified": ":green[Verified]", "approximate": ":orange[Approximate]", "unverified": ":red[Unverified]"}
 PAGES_LEAD = ["1. Connect", "2. Reconstruct and verify", "3. Review and approve", "4. Handover", "5. Transfer responsibilities", "6. Departure checklist", "7. Audit log"]
@@ -1052,7 +1054,8 @@ def route(page: str, user: str, role: str) -> None:
         page_audit()
 
 
-def main() -> None:
+def desktop_main() -> None:
+    mobile.apply()
     setup_workspace()
     users = db.q("SELECT name, role FROM users ORDER BY id")
     names = [u["name"] for u in users]
@@ -1098,7 +1101,8 @@ def main() -> None:
     msg = st.session_state.pop("flash", None)
     if msg:
         st.toast(msg)
-    html(ui.hero("HandoverTrail", SUBTITLE, user, role))
+    html("<div class='ht-d-only'>" + ui.hero("HandoverTrail", SUBTITLE, user, role) + "</div>")
+    html(mobile.header_html(user, role))
 
     # workflow navigation: pill tabs on a laptop, a fixed bottom tab bar on a phone
     pages = PAGES_LEAD if role == "Lead" else PAGES_OTHER
@@ -1117,13 +1121,39 @@ def main() -> None:
         notes_page(user, role)
     else:
         done, current = progress_state()
-        html(ui.stepper(done, current))
+        html("<div class='ht-d-only'>" + ui.stepper(done, current) + "</div>")
+        html(mobile.progress_html(done, current))
         late = notes.due(user, role)
         if late:
             over = sum(1 for n in late if n["remind_on"] < notes.today().isoformat())
             html(ui.reminder_banner(over, len(late) - over))
         route(page, user, role)
     html(ui.footer())
+
+
+# On a phone the app opens in phone app mode (?view=phone). Add ?view=desktop to force the laptop view.
+DETECT_JS = """<script>
+try {
+  var w = window.parent.innerWidth || screen.width;
+  var u = new URL(window.parent.location.href);
+  if (w <= 700 && !u.searchParams.get('view')) { u.searchParams.set('view', 'phone'); window.parent.location.replace(u.toString()); }
+} catch (e) {}
+</script>"""
+
+
+def main() -> None:
+    view = st.query_params.get("view")
+    if view is None and not st.session_state.get("detect_sent"):
+        st.session_state["detect_sent"] = True
+        components.html(DETECT_JS, height=0)
+    if view == "phone":
+        setup_workspace()
+        phone.run(SimpleNamespace(
+            page_handover=page_handover, page_review=page_review, page_transfer=page_transfer,
+            page_checklist=page_checklist, page_audit=page_audit, notes_page=notes_page,
+            paste_box=paste_box, provider=provider_for_session))
+    else:
+        desktop_main()
 
 
 main()

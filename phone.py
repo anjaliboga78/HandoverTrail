@@ -230,11 +230,12 @@ html body .stApp [class*="st-key-ph_acc_blue"] button { background: #2f7de1 !imp
 html body .stApp [class*="st-key-ph_acc_magenta"] button { background: #c026d3 !important; }
 html body .stApp [class*="st-key-ph_acc_orange"] button { background: #f0613c !important; }
 """
+
 HC_CSS = (".stApp{--p-border:var(--p-text) !important;}"
           ".ph-card,.ph-tile,.ph-attn,.ph-proj,.ph-li,[data-testid='stExpander'],[data-testid='stMetric']{border-width:2px !important;}"
           ".stApp .stButton>button,.stApp .stDownloadButton>button{border:2px solid var(--p-text) !important;}"
           ".stApp [data-testid='stCaptionContainer'],.ph-muted,.ph-sub{color:var(--p-text) !important;}")
-RM_CSS = ",::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important;}"
+RM_CSS = "*,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important;}"
 
 
 def _vars(t: dict) -> str:
@@ -297,6 +298,7 @@ def set_pref(name: str, value: str) -> None:
 def current_theme() -> str:
     key = st.query_params.get("mt") or st.session_state.get("ph_theme") or DEFAULT_THEME
     return key if (key in THEMES or key == "system") else DEFAULT_THEME
+
 
 # ------------------------------------------------------------------ small helpers
 
@@ -401,6 +403,7 @@ def run_extraction_button(user: str, ctx, key: str) -> None:
     if pending and st.button(f"Run extraction ({pending} new source{'s' if pending != 1 else ''})", key=key, type="primary"):
         _extract_now(user, ctx)
 
+
 # ------------------------------------------------------------------ Welcome and Login
 
 def welcome_screen() -> None:
@@ -421,7 +424,7 @@ def login_screen(users: list) -> None:
     names = [u["name"] for u in users]
     sel = st.session_state.get("ph_pick") or names[0]
     for i, u in enumerate(users):
-        mark = "✔️ " if u["name"] == sel else "👤 "
+        mark = "✔ " if u["name"] == sel else "👤 "
         if st.button(f"{mark}{u['name']}\n{u['role']}", key=f"row_login_{i}", use_container_width=True):
             st.session_state["ph_pick"] = u["name"]
             st.rerun()
@@ -430,6 +433,7 @@ def login_screen(users: list) -> None:
         st.session_state["ph_logged"] = True
         st.rerun()
     _h("<div class='ph-secure'>🔒 Secure demo workspace</div>")
+
 
 # ------------------------------------------------------------------ Overview (Home)
 
@@ -474,7 +478,7 @@ def tab_overview(user: str, role: str, ctx) -> None:
     for i in attn:
         dot = {0: "🔴", 1: "🟠", 2: "🔵"}[severity(i)]
         why = "; ".join(flags.describe(i, lookup, role)) or type_label(i["type"])
-        if st.button(f"{dot} {plain(i['text'])[:70]}\n{_plain(why)[:80]}", key=f"row_att{i['id']}", use_container_width=True):
+        if st.button(f"{dot} {_plain(i['text'])[:70]}\n{_plain(why)[:80]}", key=f"row_att_{i['id']}", use_container_width=True):
             _go("Verify", i["id"])
     if attn and st.button("See all in Verify →", key="ph_seeall"):
         st.session_state.pop("ph_item", None)
@@ -605,6 +609,7 @@ def tab_sources(user: str, role: str, ctx) -> None:
         else:
             st.caption("Nothing needed masking.")
 
+
 # ------------------------------------------------------------------ Reconstruct, Verify, Conflicts, Item details
 
 MEANING = {
@@ -724,7 +729,8 @@ def verify_detail(it: dict, lookup: dict, user: str, role: str) -> None:
                 st.session_state["ph_item"] = o["id"]
                 st.rerun()
 
-  def tab_verify(user: str, role: str, ctx) -> None:
+
+def tab_verify(user: str, role: str, ctx) -> None:
     items = handover.list_items()
     lookup = {i["id"]: i for i in items}
     sel = st.session_state.get("ph_item")
@@ -750,7 +756,7 @@ def verify_detail(it: dict, lookup: dict, user: str, role: str) -> None:
     for i in shown:
         sub = f"{STATUS_TEXT[i['verify_status']]} · {type_label(i['type'])} · {i['source_name']}"
         q = _plain(i["quote"])[:70]
-        if st.button(f"{STATUS_EMOJI[i['verify_status']]} {plain(i['text'])[:75]}\n{_plain(sub)[:80]}\n“{q}”", key=f"row_it{i['id']}", use_container_width=True):
+        if st.button(f"{STATUS_EMOJI[i['verify_status']]} {_plain(i['text'])[:75]}\n{_plain(sub)[:80]}\n“{q}”", key=f"row_it_{i['id']}", use_container_width=True):
             st.session_state["ph_item"] = i["id"]
             st.rerun()
 
@@ -778,7 +784,7 @@ def report_card(user: str, role: str) -> None:
     if got and got[0] == who:
         view = handover.view_for(role)
         ver = f"_v{view['version']}" if view else ""
-        st.download_button("⬇️ Download PDF", data=got[1], file_name=f"handover_report{ver}{who.lower().replace(' ', '')}.pdf",
+        st.download_button("⬇ Download PDF", data=got[1], file_name=f"handover_report{ver}_{who.lower().replace(' ', '_')}.pdf",
                            mime="application/pdf", key="phrep_dl")
 
 
@@ -839,6 +845,7 @@ def screen_audit(ctx) -> None:
            f"<span>{ui.esc(what)}{tgt}</span></div><span class='ph-muted'>{ui.esc(str(r['at'])[5:16])}</span></div>")
     with st.expander("Full audit tables (who viewed, acknowledgements)"):
         ctx.page_audit()
+
 
 def tab_report(user: str, role: str, ctx) -> None:
     _h(title_html("Report", "Review, hand over, transfer and close out."))
@@ -928,6 +935,7 @@ def tab_profile(user: str, role: str, ctx, names: list) -> None:
                 db.log(user, "reset", "all data")
                 _flash("All data deleted")
                 st.rerun()
+
 
 def screen_account(user: str, role: str) -> None:
     _h(title_html("Account & Permissions"))
@@ -1052,6 +1060,26 @@ def screen_notifications(user: str, role: str) -> None:
     for n, (icon, title, sub, kw) in enumerate(cards):
         if st.button(f"{icon} {title}\n{sub}", key=f"row_nt_{n}", use_container_width=True):
             _open(**kw)
+
+
+def screen_menu(user: str, role: str) -> None:
+    """Screen 18: every screen in one list."""
+    _h(f"<div class='ph-card ph-src'><div class='ph-avatar'>{_initial(user)}</div><div class='m'><b>{ui.esc(user)}</b>"
+       f"<span class='ph-chip c-accent'>{ui.esc(role)}</span></div></div>")
+    if role == "Lead":
+        entries = [("🏠", "Home", dict(tab="Overview")), ("🗂️", "Sources", dict(tab="Sources")),
+                   ("🛡️", "Reconstruct & Verify", dict(tab="Verify", vmode="reconstruct")),
+                   ("📄", "Handover report", dict(tab="Report", rep="Handover")), ("✅", "Review & approve", dict(tab="Report", rep="Review")),
+                   ("🔁", "Transfer responsibilities", dict(tab="Report", rep="Transfer")),
+                   ("☑️", "Departure checklist", dict(tab="Report", rep="Checklist")), ("🧾", "Audit log", dict(tab="Report", rep="Audit"))]
+    else:
+        entries = [("📄", "Handover", dict(tab="Handover")), ("☑️", "Departure checklist", dict(tab="Checklist"))]
+    entries += [("📝", "My notes", dict(notes_open=True)), ("🔔", "Notifications", dict(screen="notifications")),
+                ("🎨", "Appearance", dict(screen="appearance")), ("👤", "Profile & Settings", dict(tab="Profile"))]
+    for n, (icon, label, kw) in enumerate(entries):
+        if st.button(f"{icon} {label}", key=f"row_menu_{n}", use_container_width=True):
+            _open(**kw)
+
 
 def screen_overlay(name: str, user: str, role: str, ctx) -> None:
     if st.button("← Back", key="ph_ovback"):

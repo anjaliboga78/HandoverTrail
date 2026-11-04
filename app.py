@@ -23,6 +23,15 @@ BADGE = {"verified": ":green[Verified]", "approximate": ":orange[Approximate]", 
 PAGES_LEAD = ["1. Connect", "2. Reconstruct and verify", "3. Review and approve", "4. Handover", "5. Transfer responsibilities", "6. Departure checklist", "7. Audit log"]
 PAGES_OTHER = ["4. Handover", "6. Departure checklist"]
 SUBTITLE = "Rebuild what a leaving teammate knew, prove it with sources, and hand it over safely."
+NAV_LABEL = {
+    "1. Connect": "🔗 Connect",
+    "2. Reconstruct and verify": "🔍 Verify",
+    "3. Review and approve": "✅ Review",
+    "4. Handover": "📋 Handover",
+    "5. Transfer responsibilities": "🔁 Transfer",
+    "6. Departure checklist": "☑️ Checklist",
+    "7. Audit log": "🧾 Audit",
+}
 
 
 # ------------------------------------------------------------------ helpers
@@ -1047,15 +1056,21 @@ def main() -> None:
     setup_workspace()
     users = db.q("SELECT name, role FROM users ORDER BY id")
     names = [u["name"] for u in users]
-    st.sidebar.markdown(ui.sidebar_logo(), unsafe_allow_html=True)
-    user = st.sidebar.selectbox("Signed in as (demo login)", names, key="user_name")
-    role = next(u["role"] for u in users if u["name"] == user)
-    prefs = themes.get_prefs(user)
+    prefs_user = st.session_state.get("user_name") or names[0]
+    prefs = themes.get_prefs(prefs_user)
     html(ui.CSS)
     html(themes.css_for(prefs))
+    # the splash goes out first so nothing else shows while the page builds
     if prefs["splash"] == "1" and prefs["motion"] == "0" and not st.session_state.get("splash_shown"):
         st.session_state["splash_shown"] = True   # once per visit: later clicks never replay it
         html(splash.markup())
+
+    # sidebar = short drawer: account, notes, appearance
+    st.sidebar.markdown(ui.sidebar_logo(), unsafe_allow_html=True)
+    user = st.sidebar.selectbox("Signed in as (demo login)", names, key="user_name")
+    role = next(u["role"] for u in users if u["name"] == user)
+    if user != prefs_user:
+        prefs = themes.get_prefs(user)
     st.sidebar.markdown(ui.name_tag(user, role), unsafe_allow_html=True)
     if st.session_state.get("last_user") != user:
         db.log(user, "switch_user", role)
@@ -1076,12 +1091,6 @@ def main() -> None:
     if quick != prefs["theme"]:
         themes.set_pref(user, "theme", quick)
         st.rerun()
-
-    pages = PAGES_LEAD if role == "Lead" else PAGES_OTHER
-    page = st.sidebar.radio("Workflow", pages, key=f"nav_{role}")
-    st.sidebar.divider()
-    st.sidebar.caption(f"Handover status: **{readiness.status_flow()}**  \n" + " > ".join(readiness.FLOW))
-    st.sidebar.caption("Restricted items are removed before any view or plan is built for you.")
     if PUBLIC:
         st.sidebar.info("Your workspace is private to this browser session and deleted after 24 hours. "
                         "Use only made-up or permitted data.")
@@ -1090,6 +1099,18 @@ def main() -> None:
     if msg:
         st.toast(msg)
     html(ui.hero("HandoverTrail", SUBTITLE, user, role))
+
+    # workflow navigation: pill tabs on a laptop, a fixed bottom tab bar on a phone
+    pages = PAGES_LEAD if role == "Lead" else PAGES_OTHER
+    page = st.radio("Workflow", pages, key=f"nav_{role}", horizontal=True,
+                    format_func=lambda p: NAV_LABEL[p], label_visibility="collapsed")
+    if st.session_state.get("last_page") not in (None, page) and (notes_open or look_open):
+        st.session_state["notes_open"] = st.session_state["look_open"] = False   # tapping a tab leaves notes / appearance
+        st.session_state["last_page"] = page
+        st.rerun()
+    st.session_state["last_page"] = page
+    st.caption(f"Handover status: **{readiness.status_flow()}**")
+
     if look_open:
         page_appearance(user, prefs)
     elif notes_open:

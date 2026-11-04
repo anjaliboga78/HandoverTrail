@@ -11,11 +11,13 @@ import pandas as pd
 import streamlit as st
 
 import splash
+import mobile
 import ui
 from core import checklist, config, db, extract, flags, handover, ingest, llm, notes, paste, plan, readiness, report, roles, safety, themes, transfer
 from ui import STATUS_TEXT, type_label
 
 st.set_page_config(page_title="HandoverTrail", page_icon=str(config.BASE / "assets" / "icon.png"), layout="wide")
+mobile.apply()
 
 BADGE = {"verified": ":green[Verified]", "approximate": ":orange[Approximate]", "unverified": ":red[Unverified]"}
 PAGES_LEAD = ["1. Connect", "2. Reconstruct and verify", "3. Review and approve", "4. Handover", "5. Transfer responsibilities", "6. Departure checklist", "7. Audit log"]
